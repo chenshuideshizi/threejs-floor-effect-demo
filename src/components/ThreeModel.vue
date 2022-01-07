@@ -14,21 +14,40 @@ export default {
     data() {
         return {
             borderData: borderData,
-            _borderData: [], // 楼房基础数据
-            _bounds: [], // 楼房四至
-            _center: [] // 楼房中心点
+            scene: null
         }
     },
     mounted() {
         this.initContainer()
         this.renderModel()
+        this.testShape()
     },
     methods: {
+        testShape() {
+var x = 0, y = 0;
+
+var heartShape = new THREE.Shape();
+
+heartShape.moveTo( x + 5, y + 5 );
+heartShape.bezierCurveTo( x + 5, y + 5, x + 4, y, x, y );
+heartShape.bezierCurveTo( x - 6, y, x - 6, y + 7,x - 6, y + 7 );
+heartShape.bezierCurveTo( x - 6, y + 11, x - 3, y + 15.4, x + 5, y + 19 );
+heartShape.bezierCurveTo( x + 12, y + 15.4, x + 16, y + 11, x + 16, y + 7 );
+heartShape.bezierCurveTo( x + 16, y + 7, x + 16, y, x + 10, y );
+heartShape.bezierCurveTo( x + 7, y, x + 5, y + 5, x + 5, y + 5 );
+
+var geometry = new THREE.ShapeGeometry( heartShape );
+var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
+var mesh = new THREE.Mesh( geometry, material ) ;
+this.scene.add( mesh );
+
+        },
         renderModel() {
             const { featureCollection } = borderData
             featureCollection.forEach(feature => {
                 if (feature.type === 'floor') {
-                    createFloor(feature)
+                    const  floor = createFloor(feature)
+                    this.scene.add(floor)
                 }
             })
         },
@@ -36,6 +55,7 @@ export default {
         initContainer() {
             /*创建场景对象Scene*/
             var scene = new THREE.Scene()
+            this.scene = scene
             // 添加楼房楼层平面
             // addFloors(scene, borderData)
             /* 光源设置*/
@@ -71,19 +91,19 @@ export default {
             var controls = new OrbitControls(camera, renderer.domElement)
             controls.target = new THREE.Vector3(0, 0, 0) //控制焦点
             controls.autoRotate = true;//将自动旋转关闭
-            let clock = new THREE.Clock();//用于更新轨道控制器
+            
+        // 添加格子辅助线
+        let grid = new THREE.GridHelper( 400, 30, 0xcccccc, 0xcccccc );
+        scene.add( grid )
 
             // 创建一个用于测试的正方体
-            var geometry = new THREE.BoxGeometry( 20, 20, 20 );
-            var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
-            var cube = new THREE.Mesh( geometry, material );
-            scene.add( cube );
+            // var geometry = new THREE.BoxGeometry( 20, 20, 20 );
+            // var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+            // var cube = new THREE.Mesh( geometry, material );
+            // scene.add( cube );
 
             function animate() {
                 renderer.render(scene, camera)
-
-                let delta = clock.getDelta();
-                controls.update(delta);
                 requestAnimationFrame(animate)
             }
             animate()
@@ -156,7 +176,6 @@ export default {
     #modelBox {
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
     }
 }
 </style>
