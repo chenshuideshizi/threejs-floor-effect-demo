@@ -9,46 +9,44 @@ export default {
         }
     },
     methods: {
-
         // 创建场景
         initContainer(borderData) {
-            /*创建场景对象Scene*/
+            // 创建场景
             var scene = new THREE.Scene()
+
             // 添加楼房楼层平面
             this.addFloors(scene, borderData)
-            /* 光源设置*/
+
             // 环境光
             var ambientLight = new THREE.AmbientLight(0xffffff)
             scene.add(ambientLight)
-            /**
-             * 相机设置
-             */
-            var width = window.innerWidth //窗口宽度
-            var height = window.innerHeight //窗口高度
-            var k = width / height //窗口宽高比
-            var s = 1500 //三维场景显示范围控制系数，系数越大，显示的范围越大
-            //创建相机对象
+
+            // 创建相机对象
             var camera = new THREE.PerspectiveCamera(
                 45,
                 window.innerWidth / window.innerHeight,
                 0.1,
                 1000000
             )
-            camera.position.set(3000,2000,3000)
+            camera.position.set(300,200,300)
             camera.lookAt(scene.position)
-            /**
-             * 创建渲染器对象
-             */
+
+            // 添加格子辅助线
+            let grid = new THREE.GridHelper( 400, 30, 0xcccccc, 0xcccccc );
+            scene.add( grid );
+
+            // 创建渲染器对象
             var renderer = new THREE.WebGLRenderer({
                 antialias: true,
                 alpha: true
             })
-            renderer.setSize(window.innerWidth - 300, window.innerHeight)
+            renderer.setSize(window.innerWidth, window.innerHeight)
             document.getElementById('modelBox').appendChild(renderer.domElement)
 
+            // 控制器
             var controls = new OrbitControls(camera, renderer.domElement)
             controls.target = new THREE.Vector3(0, 0, 0) //控制焦点
-            controls.autoRotate = true;//将自动旋转关闭
+            controls.autoRotate = false;//将自动旋转关闭
             let clock = new THREE.Clock();//用于更新轨道控制器
 
             function animate() {
@@ -106,6 +104,7 @@ export default {
         },
         // 数据转换
         _dataAnalysis (borderData) {
+            console.log('borderData', borderData)
             let data = []
             borderData.features.forEach(res => {
                 res.geometry.coordinates.forEach(r => {
@@ -119,6 +118,7 @@ export default {
                     })
                 })
             })
+            console.log('newBorderData', data)
             this._borderData = data
         },
         // 获取模型四至

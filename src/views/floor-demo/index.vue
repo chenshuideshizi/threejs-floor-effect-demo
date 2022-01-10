@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import borderData from './build.json'
+import borderData from './build_demo.json'
 import createModel from './createModel'
 export default {
     name: 'threeModel',
@@ -16,7 +16,7 @@ export default {
         }
     },
     mounted() {
-        this.initContainer(this.borderData)
+        this.initContainer(borderData)
     }
 }
 </script>
@@ -28,7 +28,7 @@ export default {
     #modelBox {
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(0, 0, 0, 1);
     }
 }
 </style>
