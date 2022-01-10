@@ -21,6 +21,11 @@ const routes = [
         name: "Floor",
         component:  () => import('../views/floor/index.vue'),
     },
+    {
+        path: "/floor-demo",
+        name: "Floor",
+        component:  () => import('../views/floor-demo/index.vue'),
+    }
 ];
 
 // 导出路由
