@@ -23,7 +23,7 @@ const routes = [
     },
     {
         path: "/floor-demo",
-        name: "Floor",
+        name: "FloorDemo",
         component:  () => import('../views/floor-demo/index.vue'),
     }
 ];

@@ -16,13 +16,6 @@ export function initContainer(borderData) {
     // 添加格子辅助线
     let grid = new THREE.GridHelper( 400, 30, 0xcccccc, 0xcccccc );
     scene.add( grid );
-    
-    // new THREE.SphereGeometry(球半径, 水平分割面的数量, 垂直分割面的数量)
-    // let ball = new THREE.SphereGeometry( 5 , 32 , 32 ); // 创建小球
-    // let ballColor = new THREE.MeshPhongMaterial( { color: 0xff0000 } ); //创建材质色，用来给球上色的
-    // let sphere = new THREE.Mesh( ball , ballColor ); //给球上色
-    // scene.add( sphere ); //把球加入到场景
-
 
     /**
      * 创建渲染器对象
@@ -53,82 +46,62 @@ export function initContainer(borderData) {
     }
 }
 
-
-
-export function createFloor(floorData) {
-    debugger
-    var group = new THREE.Group();
-    floorData.features.forEach(feature => {
-        const {properties} = feature
-        const { type, coordinates } = feature.geometry
-
-        const points = transformUnit(coordinates)
-        console.log('points', points)
-
-        const shape = createShape(points)
-        const mesh = createPolyline(shape)
-
-        group.add(mesh);
-    })
-
-
-    return group
-
-    function transformUnit(coordinates) {
-        return coordinates
-        // return coordinates.map(item => {
-        //     debugger
-        //     return item.map(item2 => {
-        //         return (item2 * 1112000).toFixed(0) * 1
-        //     })
-        // })
-    }
-    function createShape(points) {
-        var shape = new THREE.Shape();
-        points.forEach((e,i) => {
-            if (i === 0) {
-                shape.moveTo( ...e);
-            } else {
-                shape.lineTo( ...e);
-            }
-        })
-        return shape
-    }
+/**
+ * 创建一个小球
+ * @returns 
+ */
+export function createBall() {
+    // new THREE.SphereGeometry(球半径, 水平分割面的数量, 垂直分割面的数量)
+    let ball = new THREE.SphereGeometry( 5 , 32 , 32 ); // 创建小球
+    let ballColor = new THREE.MeshPhongMaterial( { color: 0xff0000 } ); //创建材质色，用来给球上色的
+    let sphere = new THREE.Mesh( ball , ballColor ); //给球上色
+    return sphere
 }
 
-        // 创建透明平面
-export function createPolyline(shape, h = 10, opacity = 1, color='rgb(0, 0,255, 0)'){
-            var geometry = new THREE.ShapeGeometry( shape );
-            var cubeMaterial=new THREE.MeshBasicMaterial({
-                color:  color,
-                transparent:true,
-                opacity:opacity,
-                side:THREE.DoubleSide  // 强制双面
-            });
-            var mesh = new THREE.Mesh( geometry, cubeMaterial );
+export function createWall(point1, point2,height = 99) {
+    const geometry = new THREE.BufferGeometry();
+    const pointArr = [
+        point1[0], 0,  point1[1], // left-bottom
+        point1[0], height,  point1[1], // left-top
+        point2[0],  height,  point2[1], // right-top
 
-            mesh.position.z = h*20;
-            // mesh.scale.set(1,1,1);
-            mesh.scale.set(1,1,1);
-            mesh.rotation.set(0,0,0);
+        point2[0],  height,  point2[1], // right-top
+        point2[0],  0,  point2[1], // right-bottom
+        point1[0],  0,  point1[1], // left-bottom
+    ]
+    console.log(pointArr)
+    const vertices = new Float32Array(pointArr);
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.DoubleSide } ); // doubleSide 很重要
+    const wall = new THREE.Mesh( geometry, material );
 
-            return mesh
+    return wall 
 }
-        // 创建边缘平面
-export function createPolygonline(group, data, h=0){
-            var material = new THREE.LineBasicMaterial({
-                color: 'rgba(53,166,255,0.8)',
-                linewidth: 1,
-                side:THREE.DoubleSide  // 强制双面
-            });
-            var geometry = new THREE.Geometry()
-            for (let item of data) {
-                geometry.vertices.push(
-                    new THREE.Vector3(...item, h*20)
-                )
-            }
-            var line = new THREE.Line(geometry, material)
-            // line.scale.set(0.8,0.8,1);
-            // line.position.set(-10,-10,0);
-            group.add(line)
-        }
+
+// export function createWall(point1, point2,height = 1) {
+//     const geometry = new THREE.BufferGeometry();
+
+//     const walls = []
+//     const y = 99
+//     for (let i = 0; i  < points.length - 1; i++) {
+//         const [x, z] = points[i]
+//         verticePoints.push(x, y, z)
+//     }
+//     const vertices = new Float32Array( [
+//         -1.0, -1.0,  2.0,
+//          1.0, -1.0,  1.0,
+//          1.0,  1.0,  1.0,
+    
+//          1.0,  1.0,  1.0,
+//         -1.0,  1.0,  1.0,
+//         -1.0, -1.0,  1.0
+//     ] );
+    
+
+//     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+//     const material = new THREE.MeshBasicMaterial( { color: 0xff0000 } );
+//     const mesh = new THREE.Mesh( geometry, material );
+//     return mesh
+
+// }

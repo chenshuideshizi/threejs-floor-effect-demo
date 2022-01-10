@@ -219,6 +219,7 @@ export default {
 
         // 创建墙面
         createWall(group, data){
+            debugger
             var material = new THREE.LineBasicMaterial({
                 color: 0xffc000
             });
@@ -230,6 +231,7 @@ export default {
                 }
             }
             for (let item of wallData) {
+                console.log('itemxxx', item)
                 var geometry = new THREE.Geometry();
                 geometry.vertices.push(
                     new THREE.Vector3( ...item[1], 0 ),
