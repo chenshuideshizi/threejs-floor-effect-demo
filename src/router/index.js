@@ -4,7 +4,7 @@ import { createRouter,createWebHistory} from "vue-router"
 const routes = [
     {
         path:  '/',
-        redirect: '/index'
+        redirect: '/floor'
     },
     {
         path: "/index",
