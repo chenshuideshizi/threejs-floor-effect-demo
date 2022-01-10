@@ -4,9 +4,17 @@ export default {
     data(){
         return{
             _borderData: [], // 楼房基础数据
-            _bounds: [], // 楼房四至
-            _center: [] // 楼房中心点
+            _bounds: [ // 楼房四角
+                [116.396168,39.997583], // left-top
+                [116.397003,39.997604], // right-top
+                [116.397066,39.996032], // bottom-right
+                [116.396217,39.996001] // bottom-left
+            ], 
+            _center: [116.396622,39.996875] // 楼房中心点
         }
+    },
+    created() {
+
     },
     methods: {
         // 创建场景
@@ -61,25 +69,34 @@ export default {
 
         // 添加楼群
         addFloors(scene, data) {
-            // 数据处理/基础数据计算
-            this._dataAnalysis(data)
-            this._getModelBounds()
-            this._getModelCenter()
-            this._dataAnalysisAll()
             // 新建楼房组
             var group = new THREE.Group();
             group.rotation.set(-1.6,0,0);
             scene.add(group)
             // 添加楼层
-            this._borderData.forEach(res => {
-                this.addFloor(group,res)
+            this._borderData.features.forEach(feature => {
+                this.addFloor(group,feature)
                 // 添加楼房黄色边框墙
-                this.createWall(group, res)
+                this.createWall(group, feature)
             })
         },
         // 添加单个楼
-        addFloor (group, data) {
-            let shape = this.createShape(data.points)
+        addFloor (group, feature) {
+            const coordinates = feature.geometry.coordinates
+            const floor = feature.properties.Floor
+            const points = coordinates.map(r => {
+                // 将度转换为米
+                r = r.map(re => {
+                    return [(re[0]*1112000).toFixed(0)*1, (re[1]*1112000).toFixed(0)*1]
+                })
+
+                return ({
+                    floor: Floor,
+                    points: r
+                })
+            })
+
+            let shape = this.createShape(points)
             let i = 0
             let addG = setInterval(() => {
                 if (i<data.floor) {
@@ -102,67 +119,11 @@ export default {
                 }
             }, 30)
         },
-        // 数据转换
-        _dataAnalysis (borderData) {
-            console.log('borderData', borderData)
-            let data = []
-            borderData.features.forEach(res => {
-                res.geometry.coordinates.forEach(r => {
-                        // 将度转换为米
-                    r = r.map(re => {
-                        return [(re[0]*1112000).toFixed(0)*1, (re[1]*1112000).toFixed(0)*1]
-                    })
-                    data.push({
-                        floor: res.properties.Floor,
-                        points: r
-                    })
-                })
-            })
-            console.log('newBorderData', data)
-            this._borderData = data
-        },
-        // 获取模型四至
-        _getModelBounds () {
-            // 四至： 上右下左
-            let bounds = [0,0,0,0]
-            // 所有点数组
-            let pointArr = []
-            // 所有点经度数组
-            let pointLonArr = []
-            // 所有点纬度数组
-            let pointLatArr = []
-            // 获取所有点数组
-            this._borderData.forEach(res => {
-                pointArr = pointArr.concat(res.points)
-            })
-            // 获取经度、纬度数组
-            pointArr.forEach(res => {
-                pointLonArr.push(res[0])
-                pointLatArr.push(res[1])
-            })
-            // 获取四至
-            bounds = [Math.max(...pointLatArr), Math.min(...pointLonArr), Math.min(...pointLatArr), Math.max(...pointLonArr)]
-            this._bounds = bounds
-        },
-        // 获取模型中心点
-        _getModelCenter () {
-            let center = [(this._bounds[1] + this._bounds[3])/2,(this._bounds[0] + this._bounds[2])/2]
-            this._center = center
-        },
-        // 数据转换2-将数据移动至原点
-        _dataAnalysisAll(){
-            this._borderData.forEach(res => {
-                res.points.forEach(re => {
-                    re[0] = re[0] - this._center[0]
-                    re[1] = re[1] - this._center[1]
-                })
-            })
-        },
 
         // 创建平面集合
-        createShape (data) {
+        createShape (points) {
             var shape = new THREE.Shape();
-            data.forEach((e,i) => {
+            points.forEach((e,i) => {
                 if (i === 0) {
                     shape.moveTo( ...e);
                 } else {
