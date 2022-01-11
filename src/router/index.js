@@ -30,6 +30,11 @@ const routes = [
         path: "/grid",
         name: "Grid",
         component:  () => import('../views/grid/index.vue'),
+    },
+    {
+        path: '/virtual-city',
+        name: 'VirtualCity',
+        component:  () => import('../views/virtual-city/index.vue'),
     }
 ];
 
