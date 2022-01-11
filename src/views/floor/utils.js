@@ -58,8 +58,18 @@ export function createBall() {
     return sphere
 }
 
-export function createWall(point1, point2,height = 99) {
+export function createGeometry(points = []) {
     const geometry = new THREE.BufferGeometry();
+    const vertices = new Float32Array(points);
+    
+    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.DoubleSide } ); // doubleSide 很重要
+    const mesh = new THREE.Mesh( geometry, material );
+
+    return mesh 
+}
+
+export function createSimgleWall(point1, point2,height = 99) {
     const pointArr = [
         point1[0], 0,  point1[1], // left-bottom
         point1[0], height,  point1[1], // left-top
@@ -69,14 +79,26 @@ export function createWall(point1, point2,height = 99) {
         point2[0],  0,  point2[1], // right-bottom
         point1[0],  0,  point1[1], // left-bottom
     ]
-    console.log(pointArr)
-    const vertices = new Float32Array(pointArr);
-    
-    geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.DoubleSide } ); // doubleSide 很重要
-    const wall = new THREE.Mesh( geometry, material );
+
+    const wall = createGeometry(pointArr);
 
     return wall 
+}
+
+export function createFloor({points, height}) {
+    var group = new THREE.Group();
+    // 通过地面的平面坐标，生成所有墙面组成的点，点是顺时针
+    for(let i = 0, l = points.length; i < l; i++) {
+        let wall
+        if (i === points.length - 1) {
+            wall = createSimgleWall(points[i], points[0], height)
+        } else {
+            wall = createSimgleWall(points[i], points[i+1], height)
+        }
+        group.add(wall)
+    }
+
+    return group
 }
 
 // export function createWall(point1, point2,height = 1) {

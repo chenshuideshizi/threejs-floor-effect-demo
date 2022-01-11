@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { initContainer, createBall, createWall } from './utils'
+import { initContainer, createBall, createSimgleWall, createFloor } from './utils'
 import TestMixin from './testMixin'
 
 export default {
@@ -27,19 +27,36 @@ export default {
     methods: {
         test() {
             // 创建中心点小球
-            if (false) {
+            if (true) {
                 const centerBall = createBall()
                 this.scene.add(centerBall)
             }
 
+            // 创建单个球体
+            if (true) {
+                const singleWall = createSimgleWall(
+                    [-70,30], 
+                    [50, 30]
+                )
+                singleWall.position.set(-30,0,30)
+                this.scene.add(singleWall)
+            }
 
-            const wall = createWall(
-                [-70,30], 
-                [50, 30]
-                // [40, -60],
-                // [-100, -80]
-            )
-            this.scene.add(wall)
+
+            // 创建一栋楼
+            if (true) {
+                const floor1 = createFloor({
+                    points: [
+                        [30, 40],
+                        [90, 40],
+                        [90, 10],
+                        [30, 10]
+                    ],
+                    height: 50
+                })
+                this.scene.add(floor1)
+            }
+
         },
         init() {
             const {scene, renderer} = initContainer()
