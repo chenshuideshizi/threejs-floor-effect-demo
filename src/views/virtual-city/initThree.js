@@ -4,9 +4,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 export function initThree() {
     var scene = new THREE.Scene()
 
-    // 环境光
-    var ambientLight = new THREE.AmbientLight(0xffffff)
-    scene.add(ambientLight)
+    const ambientLight = new THREE.AmbientLight( 0xffffff, 0.8 );    //环境光
+    scene.add( ambientLight );
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.3 );       //直射光
+    directionalLight.position.set( 1, 1, 0 ).normalize();
+    scene.add( directionalLight );
 
     //创建相机对象
     var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000000)
