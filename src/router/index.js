@@ -25,6 +25,11 @@ const routes = [
         path: "/floor-demo",
         name: "FloorDemo",
         component:  () => import('../views/floor-demo/index.vue'),
+    },
+    {
+        path: "/grid",
+        name: "Grid",
+        component:  () => import('../views/grid/index.vue'),
     }
 ];
 
