@@ -33,7 +33,7 @@ export default {
             }
 
             // 创建单个球体
-            if (true) {
+            if (false) {
                 const singleWall = createSimgleWall(
                     [-70,30], 
                     [50, 30]
@@ -47,10 +47,10 @@ export default {
             if (true) {
                 const floor1 = createFloor({
                     points: [
-                        [30, 40],
-                        [90, 40],
-                        [90, 10],
-                        [30, 10]
+                        [-100, 20],
+                        [100, 20],
+                        [100, -20],
+                        [-100, -20]
                     ],
                     height: 50
                 })

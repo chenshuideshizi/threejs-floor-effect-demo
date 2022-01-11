@@ -63,7 +63,7 @@ export function createGeometry(points = []) {
     const vertices = new Float32Array(points);
     
     geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
-    const material = new THREE.MeshBasicMaterial( { color: 0xff0000, side: THREE.DoubleSide } ); // doubleSide 很重要
+    const material = new THREE.MeshBasicMaterial( { color: 'rgba(67, 173, 127, 0.1)', side: THREE.DoubleSide } ); // doubleSide 很重要
     const mesh = new THREE.Mesh( geometry, material );
 
     return mesh 
