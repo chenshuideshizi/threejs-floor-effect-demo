@@ -6,7 +6,7 @@
 import { createCity } from "./city";
 import * as THREE from 'three'
 import { initThree } from "./initThree";
-import { createBasePlane, createTest, createBall } from "./tools";
+import { createBasePlane, createTest, createBall, createLine } from "./tools";
 
 export default {
   name: "VirtualCity",
@@ -14,7 +14,8 @@ export default {
       return {
           camera: null,
           scene: null,
-          renderer: null
+          renderer: null,
+          drawingPoints: []
       }
   },
   mounted() {
@@ -37,12 +38,44 @@ export default {
       const testMesh = createTest();
       scene.add(testMesh);
 
-      // const city = createCity()
-      // scene.add(city)
+
     },
     initEvent() {
       document.addEventListener("click", this.onDocumentMouseDown);
     },
+    renderDrawingPoints() {
+        let groupName = 'drawing-points-group'
+        let oldGroup = this.scene.getObjectByName(groupName) 
+        if (oldGroup) {
+            this.scene.remove(oldGroup)
+        }
+        let newGroup = new THREE.Group()
+        newGroup.name = groupName
+
+        // 绘制轨迹
+
+        for(let i = 0, l = this.drawingPoints.length; i < l; i++) {
+            // 是否闭合
+            if (i === l -1) {
+                break
+            }
+            let p1 = this.drawingPoints[i]
+            let p2 = this.drawingPoints[i+1]
+            const line = createLine(p1, p2)
+
+            newGroup.add(line)
+        }
+
+        this.drawingPoints.forEach(point => {
+            const ball = createBall(0.2)
+            const [x, y, z] = point
+            ball.position.set(x, y, z)
+            newGroup.add(ball)
+        })
+        this.scene.add(newGroup)
+        
+    },
+    // 点击事件
     onDocumentMouseDown(event) {
         event.preventDefault();
         const {camera, scene} = this
@@ -58,14 +91,13 @@ export default {
         if (intersects.length > 0) {
             var selected = intersects[0];//取第一个物体
             const {x, y, z} = selected.point
-            console.log("x坐标:"+selected.point.x);
-            console.log("y坐标:"+selected.point.y);
-            console.log("z坐标:"+selected.point.z);
+            console.log("x坐标:" + x);
+            console.log("y坐标:" + y);
+            console.log("z坐标:" + z);
 
-            // 在当前位置绘制一个点
-            const ball = createBall(1)
-            ball.position.set(x, y, z)
-            scene.add(ball)
+            // 保存当前点坐标
+            this.drawingPoints.push([x, y, z])
+            this.renderDrawingPoints()
         }
     }
   },

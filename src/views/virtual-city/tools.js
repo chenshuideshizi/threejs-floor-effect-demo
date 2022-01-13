@@ -43,3 +43,19 @@ export function createTest () {
     const mesh = new THREE.Mesh( geometry, material ) ;
     return mesh
 }
+
+export function createLine(point1, point2) {
+    const geometry = new THREE.Geometry();
+    const material = new THREE.LineBasicMaterial( { vertexColors: true } );
+    const color = new THREE.Color( 0xFF0000 );
+
+    // 线的材质可以由2点的颜色决定
+    const p1 = new THREE.Vector3(...point1);
+    const p2 = new THREE.Vector3(...point2);
+    geometry.vertices.push(p1);
+    geometry.vertices.push(p2);
+    geometry.colors.push( color, color );
+
+    var line = new THREE.Line( geometry, material );
+    return line
+}
