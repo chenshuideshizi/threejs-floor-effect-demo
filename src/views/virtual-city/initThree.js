@@ -44,7 +44,8 @@ export function initThree() {
 
     return {
         scene,
-        renderer
+        renderer,
+        camera
     }
 
 }

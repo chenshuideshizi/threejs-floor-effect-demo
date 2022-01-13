@@ -44,7 +44,8 @@ export function initContainer(borderData) {
 
     return {
         scene,
-        renderer
+        renderer,
+        camera
     }
 }
 
