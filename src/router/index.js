@@ -32,9 +32,9 @@ const routes = [
         component:  () => import('../views/grid/index.vue'),
     },
     {
-        path: '/virtual-city',
-        name: 'VirtualCity',
-        component:  () => import('../views/virtual-city/index.vue'),
+        path: '/city',
+        name: 'City',
+        component:  () => import('../views/city/index.vue'),
     }
 ];
 
