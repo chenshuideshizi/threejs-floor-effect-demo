@@ -5,6 +5,7 @@ export function createBasePlane (width= 40, height = 60) {
     const geometry = new THREE.BoxGeometry( width, 1, height );
     const material = new THREE.MeshBasicMaterial( {color: 'rgba(190,20,128,0.5)', side: THREE.DoubleSide} );
     const cube = new THREE.Mesh( geometry, material );
+    cube.name = 'basePlane'
     return cube
 }
 
@@ -14,6 +15,13 @@ export function createBall(r = 5) {
     let ballColor = new THREE.MeshPhongMaterial( { color: 0xff0000 } ); //创建材质色，用来给球上色的
     let sphere = new THREE.Mesh( ball , ballColor ); //给球上色
     return sphere
+}
+
+export function createBox(width = 1, height = 1, depth = 1) {
+    const geometry = new THREE.BoxGeometry( width, height, depth );
+    const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    const cube = new THREE.Mesh( geometry, material );
+    return cube
 }
 
 
@@ -41,6 +49,8 @@ export function createTest () {
     const geometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
     const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
     const mesh = new THREE.Mesh( geometry, material ) ;
+    mesh.name = 'test'
+    mesh.userData.id = 'testId'
     return mesh
 }
 

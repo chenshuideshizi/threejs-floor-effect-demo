@@ -35,7 +35,6 @@ export function initThree() {
 
     function animate() {
         renderer.render(scene, camera)
-
         let delta = clock.getDelta();
         controls.update(delta);
         requestAnimationFrame(animate)

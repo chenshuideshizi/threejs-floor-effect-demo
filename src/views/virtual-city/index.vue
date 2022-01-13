@@ -6,7 +6,7 @@
 import { createCity } from "./city";
 import * as THREE from 'three'
 import { initThree } from "./initThree";
-import { createBasePlane, createTest, createBall, createLine } from "./tools";
+import { createBasePlane, createTest, createBall, createLine, createBox } from "./tools";
 
 export default {
   name: "VirtualCity",
@@ -67,10 +67,14 @@ export default {
         }
 
         this.drawingPoints.forEach(point => {
-            const ball = createBall(0.2)
+            const boxPoint = createBox(0.2, 0.2, 0.2)
+            boxPoint.position.set(0, 0.1, 0)
+            boxPoint.userData.drawing = true
+            boxPoint.name = 'drawingBox'
+            console.log('drawingBox', boxPoint)
             const [x, y, z] = point
-            ball.position.set(x, y, z)
-            newGroup.add(ball)
+            boxPoint.position.set(x, y, z)
+            newGroup.add(boxPoint)
         })
         this.scene.add(newGroup)
         
@@ -90,14 +94,25 @@ export default {
         var intersects = raycaster.intersectObjects(scene.children);
         if (intersects.length > 0) {
             var selected = intersects[0];//取第一个物体
+            console.log('selected', selected)
+
             const {x, y, z} = selected.point
             console.log("x坐标:" + x);
             console.log("y坐标:" + y);
             console.log("z坐标:" + z);
 
-            // 保存当前点坐标
-            this.drawingPoints.push([x, y, z])
-            this.renderDrawingPoints()
+            if (selected.object.userData.drawing) {
+                debugger
+                console.log(selected.object.position)
+            } else {
+                // 保存当前点坐标
+                this.drawingPoints.push([x, y, z])
+                this.renderDrawingPoints()
+            }
+
+
+
+
         }
     }
   },
