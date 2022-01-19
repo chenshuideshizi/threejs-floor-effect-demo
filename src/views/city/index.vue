@@ -3,11 +3,11 @@
     <!-- 操作栏 -->
     <div class="tool-bar" v-if="threeEngine">
       <div>
-        <button type="button" @click="drawingFloor">绘制楼体</button>
+        <button type="button" @click="handleDrawingFloor">绘制楼体</button>
         <div v-show="threeEngine.status === 2">
           <button type="button" disabled>撤回</button>
           <button type="button" disabled>恢复</button>
-          <button type="button">完成</button>
+          <button type="button" @click="handleCreateFloor">完成</button>
         </div>
       </div>
 
@@ -20,11 +20,15 @@
 
 <script>
 import ThreeEngine from './utils/three-engine-class'
+import { createFloorPolygon, default as Floor } from './utils/floor'
+import { createBox } from './shared/extra'
+
 export default {
   name: "VirtualCity",
   data() {
       return {
-        threeEngine: null
+        threeEngine: null,
+        drawingFloorPoints: []
       }
   },
   mounted() {
@@ -40,12 +44,25 @@ export default {
 
       this.threeEngine= threeEngine
 
-      const box1 = threeEngine.utils.createBox(20, 20, 20)
+      const box1 = createBox(20, 20, 20)
       box1.position.set(6, 0, 6)
       threeEngine.scene.add(box1)
     },
-    drawingFloor() {
+    handleDrawingFloor() {
       this.threeEngine.status = 2
+      let polygon = null
+      this.threeEngine.bus.$on('click', ({selected}) => {
+        const {x, y, z} = selected.point
+        this.drawingFloorPoints.push([x, y, z])
+
+        this.threeEngine.scene.remove(polygon) // 清除老的形状
+        polygon = createFloorPolygon(this.drawingFloorPoints)
+        this.threeEngine.scene.add(polygon) // 绘制新的形状
+      })
+    },
+    handleCreateFloor() {
+      const floor = new Floor({points: this.drawingFloorPoints, height: 100})
+      this.threeEngine.scene.add(floor.mesh)
     }
   },
 };
