@@ -1,5 +1,8 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import { Earcut } from 'three/src/extras/Earcut.js'
+
+console.log('THREE', THREE)
 
 class ThreeEngine {
     constructor(options = {}) {
@@ -125,7 +128,6 @@ class ThreeEngine {
         window.addEventListener( 'resize', onWindowResize );
 
         function onClick(event) {
-            debugger
             const { selected, camera } = this
             console.log(this)
             if (this.status === 2 && selected) {
@@ -140,6 +142,7 @@ class ThreeEngine {
                     // 保存当前点坐标
                     this.drawingPoints.push([x, y, z])
                     this._renderDrawingPoints()
+                    this.createPolygon(this.drawingPoints)
                 }
             }
         }
@@ -229,6 +232,40 @@ class ThreeEngine {
             renderer.setSize( canvasWidth, canvasHeight );
 
         }
+    }
+    // 这是代码有问题
+    createPolygon(positions){
+        if (positions.length < 5) {
+            return
+        }
+        debugger
+        var shapePositons = [];
+         for(var i=0;i<positions.length;i++){
+            var position = positions[i];
+            shapePositons.push(new THREE.Vector3(position[0],position[1],position[2]));
+        }
+        var data = [];
+        for(var i=0; i < positions.length; i++){
+            var position = positions[i];
+            data.push(position[0],position[1]);
+        }
+        var faces = [];
+        var triangles = Earcut.triangulate(data);
+        if(triangles && triangles.length != 0){
+            for(var i=0;i<triangles.length;i++){
+                var length = triangles.length;
+                if(i%3==0 && i < length-2){
+                    faces.push(new THREE.Face3(triangles[i],triangles[i+1],triangles[i+2]));
+                }
+            }
+        }
+        var geometry = new THREE.BufferGeometry();
+        geometry.vertices = shapePositons;
+        geometry.faces = faces;
+
+        const material = new THREE.MeshBasicMaterial( { color:  'green' })
+        var mesh = new THREE.Mesh(geometry,material);
+        this.scene.add(mesh)
     }
     _renderDrawingPoints() {
         let groupName = 'drawing-group'
