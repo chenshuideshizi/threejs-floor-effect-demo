@@ -26,7 +26,7 @@ class ThreeEngine {
         this.isMousedown = false
         this.selected = null
         this.drawingPoints = []
-        this.status = 2 // 1 展示, 2 绘制区域
+        this.status = 1 // 1 展示, 2 绘制区域
 
         // 鼠标的当前位置
         const mouse = new THREE.Vector2();
@@ -130,7 +130,6 @@ class ThreeEngine {
 
         function onClick(event) {
             const { selected, camera } = this
-            console.log(this)
             if (this.status === 2 && selected) {
                 const {x, y, z} = selected.point
                 console.log("x坐标:" + x);
