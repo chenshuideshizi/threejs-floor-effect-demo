@@ -100,9 +100,12 @@ class ThreeEngine {
         // scene.add(ambientLight);
 
         //直射光
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3);
-        directionalLight.position.set(1, 1, 1).normalize();
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
+        directionalLight.position.set(100, 100, 100).normalize();
         scene.add(directionalLight);
+
+        var directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 50, 'green');
+        scene.add(directionalLightHelper);
     }
     _initHelper() {
         const { scene } = this
