@@ -59,6 +59,7 @@ class ThreeEngine {
             antialias: true,
             alpha: true
         })
+        renderer.shadowMap.enabled = true;
         renderer.setSize(this.options.canvasWidth, this.options.canvasHeight)
 
         var controls = new OrbitControls(camera, renderer.domElement)
@@ -96,12 +97,14 @@ class ThreeEngine {
     _initLight() {
         const { scene } = this
         // 环境光, 均匀地照亮场景中的所有对象， 不能用于投射阴影，因为它没有方向。
-        // const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-        // scene.add(ambientLight);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
 
         //直射光
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(100, 100, 100).normalize();
+        directionalLight.position.set(100, 150, 100).normalize();
+        directionalLight.castShadow = true;
+        directionalLight.shadow.camera.zoom = 4; // tighter shadow map
         scene.add(directionalLight);
         this.directionalLight = directionalLight
     }
@@ -118,6 +121,7 @@ class ThreeEngine {
     _initBasePlane() {
         const { planeWidth, planeHeight, planeColor } = this.options
         const basePlane = this.utils.createBasePlane(planeWidth, planeHeight, planeColor)
+
         this.basePlane = basePlane
         this.scene.add(basePlane)
     }
@@ -245,8 +249,10 @@ class ThreeEngine {
         },
         createBasePlane(width = 40, height = 60, color) {
             const geometry = new THREE.BoxGeometry(width, 1, height);
-            const material = new THREE.MeshBasicMaterial({ color, side: THREE.DoubleSide });
+            const material = new THREE.MeshPhongMaterial({ color, side: THREE.DoubleSide });
             const cube = new THREE.Mesh(geometry, material);
+            cube.castShadow = true;
+            cube.receiveShadow = true;
             cube.name = 'basePlane'
 
             return cube

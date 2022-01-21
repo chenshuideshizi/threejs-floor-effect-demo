@@ -5,7 +5,7 @@ import { createBox, createLine } from '../shared/extra'
 class Floor {
     constructor({ points, height }) {
         this.geometry = createGeometry(points, height)
-        this.material = new THREE.MeshBasicMaterial({ color: 'green', side: THREE.DoubleSide })
+        this.material = new THREE.MeshStandardMaterial({ color: 'green', side: THREE.DoubleSide })
         this.mesh = new THREE.Mesh(this.geometry, this.material);
     }
 

@@ -39,14 +39,14 @@ export default {
     initThreeEngine() {
       const threeEngine = this.threeEngine = new ThreeEngine({
         el: this.$refs.threeContainer,
-        canvasWidth: 600,
+        canvasWidth: 1000,
         canvasHeight: 600
       })
 
       this.threeEngine= threeEngine
 
-      const box1 = createBox(20, 20, 20)
-      box1.position.set(6, 0, 6)
+      const box1 = createBox(20, 40, 20)
+      box1.position.set(6, 20, 6)
       threeEngine.scene.add(box1)
     },
     handleDrawingFloor() {

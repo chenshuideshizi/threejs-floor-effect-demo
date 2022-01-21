@@ -47,7 +47,7 @@ export function createBall(r = 5) {
 
 export function createBox(width = 1, height = 1, depth = 1) {
     const geometry = new THREE.BoxGeometry( width, height, depth );
-    const material = new THREE.MeshBasicMaterial( { color:  0x0096FF })
+    const material = new THREE.MeshStandardMaterial( { color:  0x0096FF })
     const cube = new THREE.Mesh( geometry,  material);
     return cube
 }
