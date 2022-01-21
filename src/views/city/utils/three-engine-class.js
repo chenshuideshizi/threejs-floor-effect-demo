@@ -43,7 +43,7 @@ class ThreeEngine {
 
         this._initCamera()
 
-        // this._initHelper()
+        this._initHelper()
 
         this._initBasePlane()
 
@@ -103,15 +103,16 @@ class ThreeEngine {
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
         directionalLight.position.set(100, 100, 100).normalize();
         scene.add(directionalLight);
-
-        var directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight, 50, 'green');
-        scene.add(directionalLightHelper);
+        this.directionalLight = directionalLight
     }
     _initHelper() {
         const { scene } = this
         // 添加格子辅助线
         const grid = new THREE.GridHelper(400, 30, 0xcccccc, 0xcccccc);
         scene.add(grid);
+
+        var directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, 50, 'green');
+        scene.add(directionalLightHelper);
 
     }
     _initBasePlane() {
