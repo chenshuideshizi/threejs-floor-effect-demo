@@ -28,6 +28,7 @@ export default {
   data() {
       return {
         threeEngine: null,
+        floors: [],
         drawingFloorPoints: []
       }
   },
@@ -61,8 +62,12 @@ export default {
       })
     },
     handleCreateFloor() {
+      this.threeEngine.status = 1
       const floor = new Floor({points: this.drawingFloorPoints, height: 100})
+      console.log('floor', floor)
       this.threeEngine.scene.add(floor.mesh)
+      this.floors.push(this.drawingFloorPoints)
+      this.drawingFloorPoints = []
     }
   },
 };
