@@ -45,8 +45,8 @@ export default {
 
       this.threeEngine= threeEngine
 
-      const box1 = createBox(20, 40, 20)
-      box1.position.set(6, 20, 6)
+      const box1 = createBox(1, 1, 1)
+      box1.position.set(0, 0.5, 0)
       threeEngine.scene.add(box1)
     },
     handleDrawingFloor() {
@@ -64,7 +64,8 @@ export default {
     handleCreateFloor() {
       this.threeEngine.status = 1
       const floor = new Floor({points: this.drawingFloorPoints, height: 100})
-      console.log('floor', floor)
+
+      this.threeEngine.objects.push(floor.mesh)
       this.threeEngine.scene.add(floor.mesh)
       this.floors.push(this.drawingFloorPoints)
       this.drawingFloorPoints = []

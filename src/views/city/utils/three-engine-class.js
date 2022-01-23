@@ -1,7 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-import Floor from './floor'
 import EventBus from '../shared/EventBus'
 
 
@@ -26,11 +25,13 @@ class ThreeEngine {
         this.isMousedown = false
         this.selected = null
         this.drawingPoints = []
-        this.status = 1 // 1 展示, 2 绘制区域
+        this._status = 1 // 1 展示, 2 绘制区域
 
         // 鼠标的当前位置
         const mouse = new THREE.Vector2();
         this.mouse = mouse
+
+        this.objects = [] // 所有的物体
 
 
         /**
@@ -51,6 +52,24 @@ class ThreeEngine {
 
         this._initEvent()
 
+        // 标定中的物体
+        const rollOverGeo = new THREE.BoxGeometry(4, 4, 4);
+        const rollOverMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.5, transparent: true });
+        this.rollOverMesh = new THREE.Mesh(rollOverGeo, rollOverMaterial);
+        this.rollOverMesh.visible = false
+        this.scene.add(this.rollOverMesh);
+
+    }
+    get status () {
+        return this._status
+    }
+    set status (val) {
+        if  (val === 1) {
+            this.rollOverMesh.visible = false
+        } else if (val === 2) {
+            this.rollOverMesh.visible = true
+        }
+        this._status = val
     }
     _initRender() {
         const { scene, camera } = this
@@ -76,8 +95,6 @@ class ThreeEngine {
 
             camera.updateMatrixWorld();
 
-
-
             renderer.render(scene, camera)
             requestAnimationFrame(render)
         }
@@ -90,7 +107,7 @@ class ThreeEngine {
     _initCamera() {
         const { scene } = this
         const camera = new THREE.PerspectiveCamera(70, this.options.canvasWidth / this.options.canvasHeight, 0.1, 1000000)
-        camera.position.set(300, 200, 300)
+        camera.position.set(100, 100, 0)
         camera.lookAt(scene.position)
         this.camera = camera
     }
@@ -102,28 +119,29 @@ class ThreeEngine {
 
         //直射光
         const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
-        directionalLight.position.set(100, 150, 100).normalize();
+        directionalLight.position.set(10, 10, 10).normalize();
         directionalLight.castShadow = true;
-        directionalLight.shadow.camera.zoom = 4; // tighter shadow map
+        directionalLight.shadow.camera.zoom = 40; // tighter shadow map
+        
         scene.add(directionalLight);
         this.directionalLight = directionalLight
     }
     _initHelper() {
         const { scene } = this
         // 添加格子辅助线
-        const grid = new THREE.GridHelper(400, 30, 0xcccccc, 0xcccccc);
+        const grid = new THREE.GridHelper(200, 50, 0xcccccc, 0xcccccc);
         scene.add(grid);
 
-        var directionalLightHelper = new THREE.DirectionalLightHelper(this.directionalLight, 50, 'green');
-        scene.add(directionalLightHelper);
-
+        // 相机 Helper
+        const cameraHelper = new THREE.CameraHelper( this.directionalLight.shadow.camera );
+        scene.add( cameraHelper );
     }
     _initBasePlane() {
         const { planeWidth, planeHeight, planeColor } = this.options
         const basePlane = this.utils.createBasePlane(planeWidth, planeHeight, planeColor)
-
         this.basePlane = basePlane
         this.scene.add(basePlane)
+        this.objects.push(this.basePlane)
     }
     _initEvent() {
         const { el, renderer } = this
@@ -194,21 +212,17 @@ class ThreeEngine {
                     }
                 }
             } else {
-                    const intersects = raycaster.intersectObjects(scene.children);
+                    const intersects = raycaster.intersectObjects(this.objects);
                     if ( intersects.length > 0 ) {
                         if ( this.selected != intersects[0] ) {
                             // 浏览模式
-                                if ( this.selected ) this.selected.object.material.color.setHex( this.selected.object.currentHex );
-                                this.selected = intersects[0]
-                                this.selected.object.currentHex = this.selected.object.material.color.getHex();
-                                this.selected.object.material.color.setHex( 0xff0000 );
-        
-        
-                            // const { x, y, z } = intersects[0].point
-                            // console.log("x坐标:" + x);
-                            // console.log("y坐标:" + y);
-                            // console.log("z坐标:" + z);
-        
+                            if ( this.selected ) this.selected.object.material.color.setHex( this.selected.object.currentHex );
+                            this.selected = intersects[0]
+                            this.selected.object.currentHex = this.selected.object.material.color.getHex();
+                            this.selected.object.material.color.setHex( 0xff0000 );
+    
+                            this.rollOverMesh.position.copy(this.selected.point).add(this.selected.face.normal);
+                            this.rollOverMesh.position.divideScalar(4).floor().multiplyScalar(4).addScalar(2); // 重点1，实现目标物体在一个网格中
                         }
         
                     } else {
@@ -250,8 +264,10 @@ class ThreeEngine {
         createBasePlane(width = 40, height = 60, color) {
             const geometry = new THREE.BoxGeometry(width, 1, height);
             const material = new THREE.MeshPhongMaterial({ color, side: THREE.DoubleSide });
+            material.transparent = true 
+            material.opacity = 0.5
+
             const cube = new THREE.Mesh(geometry, material);
-            cube.castShadow = true;
             cube.receiveShadow = true;
             cube.name = 'basePlane'
 

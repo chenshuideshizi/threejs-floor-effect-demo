@@ -5,8 +5,10 @@ import { createBox, createLine } from '../shared/extra'
 class Floor {
     constructor({ points, height }) {
         this.geometry = createGeometry(points, height)
-        this.material = new THREE.MeshStandardMaterial({ color: 'green', side: THREE.DoubleSide })
+        this.material = new THREE.MeshPhongMaterial({ color: 'green', side: THREE.DoubleSide })
         this.mesh = new THREE.Mesh(this.geometry, this.material);
+        this.mesh.castShadow = true; // 重点2
+        this.mesh.receiveShadow = true; // 重点3
     }
 
 }
@@ -59,8 +61,6 @@ export function createGeometry(points, height) {
 
 //points 三维坐标数组[[x,y,z],[x,y,z],...]
 export function createFloorPolygon(points) {
-    // const  points = [...originPoints, originPoints[0]]
-
     let groupName = 'floor-polygon-group'
     let newGroup = new THREE.Group()
     newGroup.name = groupName
